@@ -3,8 +3,11 @@ import './App.css';
 import MovieCard from './components/MovieCard';
 import { Movie } from './data/sampleMovies';
 import { searchMovies, getPopularMovies } from './services/tmdbService';
+import React from 'react';
+import MovieReviewForm from './components/MovieReviewForm';
 
 function App() {
+
   const [searchQuery, setSearchQuery] = useState('');
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -110,6 +113,7 @@ function App() {
           </div>
         )}
       </div>
+      <MovieReviewForm />
     </div>
   );
 }
