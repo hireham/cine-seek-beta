@@ -19,7 +19,13 @@ const MovieCard: React.FC<MovieCardProps> = ({
   backgroundImage,
 }) => {
   return (
-    <div className="movie-card" style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined }}>
+    <div className="movie-card" style={{ 
+      backgroundImage: backgroundImage 
+        ? `url(${backgroundImage})` 
+        : posterUrl 
+          ? `url(${posterUrl})` 
+          : undefined 
+    }}>
       <div className="movie-card-content">
         {title && <h2 className="movie-title">{title}</h2>}
         {subtitle && <h3 className="movie-subtitle">{subtitle}</h3>}
