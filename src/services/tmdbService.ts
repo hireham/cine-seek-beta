@@ -63,7 +63,7 @@ const convertTmdbMovie = (tmdbMovie: TmdbMovie): Movie => {
 };
 
 // Search movies by query
-export const searchMovies = async (query: string): Promise<Movie[]> => {
+export const searchMovies = async (query: string, limit?: number): Promise<Movie[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -78,7 +78,14 @@ export const searchMovies = async (query: string): Promise<Movie[]> => {
     }
     
     const data: TmdbMovieResponse = await response.json();
-    return data.results.map(convertTmdbMovie);
+    const results = data.results.map(convertTmdbMovie);
+    
+    // If a limit is specified, only return that many results
+    if (limit && results.length > limit) {
+      return results.slice(0, limit);
+    }
+    
+    return results;
   } catch (error) {
     console.error('Error searching movies:', error);
     return [];
