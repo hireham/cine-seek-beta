@@ -1,0 +1,132 @@
+.mood-recommendation-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.mood-input-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mood-input-section h3 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.mood-input-section p {
+  margin-bottom: 20px;
+  color: #ccc;
+}
+
+.mood-input {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.mood-input input {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px 0 0 8px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 16px;
+}
+
+.mood-input button {
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #ff5e62, #ff9966);
+  color: white;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.mood-input button:hover {
+  background: linear-gradient(135deg, #ff9966, #ff5e62);
+}
+
+.mood-suggestions {
+  width: 100%;
+}
+
+.mood-suggestions p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.mood-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.mood-tag {
+  padding: 8px 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.mood-tag:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.mood-processing {
+  text-align: center;
+  padding: 20px;
+}
+
+.mood-processing p {
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.recommendation-explanation {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+  max-width: 800px;
+}
+
+.recommendation-explanation h3 {
+  color: #ff9966;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.recommendation-explanation p {
+  color: #fff;
+  line-height: 1.6;
+  font-size: 16px;
+  margin-bottom: 15px;
+}

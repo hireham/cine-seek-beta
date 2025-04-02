@@ -5,13 +5,15 @@ import { Movie } from './data/sampleMovies';
 import { searchMovies, getPopularMovies } from './services/tmdbService';
 import React from 'react';
 import MovieReviewForm from './components/MovieReviewForm';
+import MoodBasedRecommendation from './components/MoodBasedRecommendation';
 
 function App() {
-
+  console.log(import.meta.env)
   const [searchQuery, setSearchQuery] = useState('');
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'mood'
 
   // Load popular movies when the component mounts
   useEffect(() => {
@@ -58,6 +60,10 @@ function App() {
     }
   };
 
+  const handleMoodBasedRecommendations = (recommendedMovies: Movie[]) => {
+    setMovies(recommendedMovies);
+  };
+
   return (
     <div className="app-container">
       <header className="header">
@@ -66,21 +72,40 @@ function App() {
       </header>
       <div className="search-container">
         <div className="search-tabs">
-          <button className="tab-button active">Quick Search</button>
-          <button className="tab-button">Guided Discovery</button>
-        </div>
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="What are you looking for?"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <button className="search-button" onClick={handleSearch}>
-            Find Movies
+          <button 
+            className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
+            onClick={() => setActiveTab('search')}
+          >
+            Quick Search
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'mood' ? 'active' : ''}`}
+            onClick={() => setActiveTab('mood')}
+          >
+            Guided Discovery
           </button>
         </div>
+        
+        {activeTab === 'search' ? (
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="What are you looking for?"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <button className="search-button" onClick={handleSearch}>
+              Find Movies
+            </button>
+          </div>
+        ) : (
+          <MoodBasedRecommendation 
+            onRecommendationsReceived={handleMoodBasedRecommendations}
+            setIsLoading={setIsLoading}
+            setError={setError}
+          />
+        )}
       </div>
       
       {isLoading && (
