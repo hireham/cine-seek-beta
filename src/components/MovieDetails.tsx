@@ -13,10 +13,20 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
   onClose,
   isLoading
 }) => {
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    // Close the details when clicking on the overlay
+    onClose();
+  };
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    // Prevent the click from propagating to the overlay
+    e.stopPropagation();
+  };
+
   if (isLoading) {
     return (
-      <div className="movie-details-overlay">
-        <div className="movie-details-container">
+      <div className="movie-details-overlay" onClick={handleOverlayClick}>
+        <div className="movie-details-container" onClick={handleContainerClick}>
           <div className="movie-details-header">
             <button className="close-button" onClick={onClose}>×</button>
           </div>
@@ -28,8 +38,8 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 
   if (!movieDetails) {
     return (
-      <div className="movie-details-overlay">
-        <div className="movie-details-container">
+      <div className="movie-details-overlay" onClick={handleOverlayClick}>
+        <div className="movie-details-container" onClick={handleContainerClick}>
           <div className="movie-details-header">
             <button className="close-button" onClick={onClose}>×</button>
           </div>
@@ -59,9 +69,10 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
   };
 
   return (
-    <div className="movie-details-overlay">
+    <div className="movie-details-overlay" onClick={handleOverlayClick}>
       <div 
         className="movie-details-container"
+        onClick={handleContainerClick}
         style={{
           backgroundImage: movieDetails.backdropUrl 
             ? `linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url(${movieDetails.backdropUrl})`
