@@ -139,25 +139,6 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
               </div>
             </div>
           )}
-          
-          {movieDetails.reviews.length > 0 && (
-            <div className="reviews-section">
-              <h3>Reviews</h3>
-              <div className="reviews-list">
-                {movieDetails.reviews.map((review) => (
-                  <div key={review.id} className="review">
-                    <div className="review-header">
-                      <span className="review-author">{review.author}</span>
-                      {review.rating && (
-                        <span className="review-rating">{review.rating}/10</span>
-                      )}
-                    </div>
-                    <p className="review-content">{review.content}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
