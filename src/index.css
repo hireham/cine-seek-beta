@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -39,6 +39,8 @@ h1 {
   font-size: 2.5rem; /* Adjusted font size for better scaling */
   line-height: 1.2;
   color: #213547; /* Ensure consistent text color */
+  font-family: 'Montserrat', 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
 }
 
 p {

@@ -2,24 +2,35 @@ import React from 'react';
 import './MovieCard.css';
 
 interface MovieCardProps {
+  id: number;
   title: string;
   subtitle?: string;
   year: number;
   genres: string[];
   posterUrl?: string;
   backgroundImage?: string;
+  onMovieClick: (movieId: number) => void;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
+  id,
   title,
   subtitle,
   year,
   genres,
   posterUrl,
   backgroundImage,
+  onMovieClick,
 }) => {
+  const handleClick = () => {
+    onMovieClick(id);
+  };
+
   return (
-    <div className="movie-card" style={{ 
+    <div 
+      className="movie-card" 
+      onClick={handleClick}
+      style={{ 
       backgroundImage: backgroundImage 
         ? `url(${backgroundImage})` 
         : posterUrl 

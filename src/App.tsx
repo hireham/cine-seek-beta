@@ -1,111 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './App.css';
-import MovieCard from './components/MovieCard';
-import { Movie } from './data/sampleMovies';
-import { searchMovies, getPopularMovies } from './services/tmdbService';
-import React from 'react';
-import MovieReviewForm from './components/MovieReviewForm';
 import MoodBasedRecommendation from './components/MoodBasedRecommendation';
+import { Movie } from './data/sampleMovies';
 
 function App() {
-  console.log(import.meta.env)
-  const [searchQuery, setSearchQuery] = useState('');
-  const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'mood'
-
-  // Load popular movies when the component mounts
-  useEffect(() => {
-    const loadPopularMovies = async () => {
-      setIsLoading(true);
-      try {
-        const popularMovies = await getPopularMovies();
-        setMovies(popularMovies);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load popular movies');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadPopularMovies();
-  }, []);
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const results = await searchMovies(searchQuery);
-      setMovies(results);
-      if (results.length === 0) {
-        setError('No movies found matching your search');
-      }
-    } catch (err) {
-      setError('An error occurred while searching for movies');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleMoodBasedRecommendations = (recommendedMovies: Movie[]) => {
-    setMovies(recommendedMovies);
-  };
+  const [recommendations, setRecommendations] = useState<Movie[]>([]);
 
   return (
     <div className="app-container">
       <header className="header">
-        <h1>Intelligent Movie Recommendations</h1>
-        <p>Find the perfect film tailored to your taste with our precision recommendation engine.</p>
+        <h1>Cineseek</h1>
+        <p>Discover films perfectly matched to your current mood. Our intelligent system analyzes your emotional state and curates a personalized film experience just for you.</p>
       </header>
-      <div className="search-container">
-        <div className="search-tabs">
-          <button 
-            className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
-            onClick={() => setActiveTab('search')}
-          >
-            Quick Search
-          </button>
-          <button 
-            className={`tab-button ${activeTab === 'mood' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mood')}
-          >
-            Guided Discovery
-          </button>
-        </div>
-        
-        {activeTab === 'search' ? (
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="What are you looking for?"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <button className="search-button" onClick={handleSearch}>
-              Find Movies
-            </button>
-          </div>
-        ) : (
-          <MoodBasedRecommendation 
-            onRecommendationsReceived={handleMoodBasedRecommendations}
-            setIsLoading={setIsLoading}
-            setError={setError}
-          />
-        )}
+      
+      <div className="mood-container">
+        <MoodBasedRecommendation 
+          onRecommendationsReceived={(movies: Movie[]) => setRecommendations(movies)}
+          setIsLoading={setIsLoading}
+          setError={setError}
+        />
       </div>
       
       {isLoading && (
@@ -120,25 +35,31 @@ function App() {
         </div>
       )}
       
-      <div className="movie-container">
-        {movies.length > 0 ? (
-          movies.map((movie) => (
-            <MovieCard 
-              key={movie.id}
-              title={movie.title}
-              subtitle={movie.subtitle}
-              year={movie.year}
-              genres={movie.genres}
-              backgroundImage={movie.backgroundImage}
-            />
-          ))
-        ) : !isLoading && !error && (
-          <div className="no-results">
-            <p>No movies to display. Try searching for something!</p>
+      {recommendations.length > 0 && (
+        <div className="recommendations-container">
+          <h2>Your Movie Recommendations</h2>
+          <div className="movie-grid">
+            {recommendations.map(movie => (
+              <div key={movie.id} className="movie-card">
+                {movie.posterUrl ? (
+                  <img src={movie.posterUrl} alt={movie.title} className="movie-poster" />
+                ) : (
+                  <div className="movie-poster-placeholder">{movie.title}</div>
+                )}
+                <div className="movie-info">
+                  <h3>{movie.title}</h3>
+                  <p>{movie.year}</p>
+                  <div className="movie-genres">
+                    {movie.genres.map((genre, index) => (
+                      <span key={index} className="genre-tag">{genre}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        )}
-      </div>
-      <MovieReviewForm />
+        </div>
+      )}
     </div>
   );
 }

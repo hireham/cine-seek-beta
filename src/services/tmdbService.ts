@@ -1,6 +1,6 @@
 import { Movie } from '../data/sampleMovies';
 
-const API_KEY = '101b3221b6a4c7ed79ca9dca8a4e3e70';
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY || '101b3221b6a4c7ed79ca9dca8a4e3e70';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -21,6 +21,80 @@ interface TmdbMovie {
   backdrop_path: string | null;
   release_date: string;
   genre_ids: number[];
+}
+
+// Interface for detailed movie information
+export interface MovieDetails {
+  id: number;
+  title: string;
+  overview: string;
+  posterUrl?: string;
+  backdropUrl?: string;
+  releaseDate: string;
+  runtime?: number;
+  voteAverage: number;
+  genres: string[];
+  cast: {
+    id: number;
+    name: string;
+    character: string;
+    profileUrl?: string;
+  }[];
+  crew: {
+    id: number;
+    name: string;
+    job: string;
+    department: string;
+  }[];
+  reviews: {
+    id: string;
+    author: string;
+    content: string;
+    rating?: number;
+  }[];
+}
+
+// Interface for TMDB movie details response
+interface TmdbMovieDetailsResponse {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date: string;
+  runtime: number | null;
+  vote_average: number;
+  genres: { id: number; name: string }[];
+}
+
+// Interface for TMDB credits response
+interface TmdbCreditsResponse {
+  id: number;
+  cast: {
+    id: number;
+    name: string;
+    character: string;
+    profile_path: string | null;
+  }[];
+  crew: {
+    id: number;
+    name: string;
+    job: string;
+    department: string;
+  }[];
+}
+
+// Interface for TMDB reviews response
+interface TmdbReviewsResponse {
+  id: number;
+  results: {
+    id: string;
+    author: string;
+    content: string;
+    author_details: {
+      rating: number | null;
+    };
+  }[];
 }
 
 // Genre mapping from TMDB genre IDs to genre names
@@ -108,5 +182,79 @@ export const getPopularMovies = async (): Promise<Movie[]> => {
   } catch (error) {
     console.error('Error fetching popular movies:', error);
     return [];
+  }
+};
+
+// Get detailed movie information by ID
+export const getMovieDetails = async (movieId: number): Promise<MovieDetails | null> => {
+  try {
+    // Fetch movie details
+    const detailsResponse = await fetch(
+      `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=en-US`
+    );
+    
+    if (!detailsResponse.ok) {
+      throw new Error(`TMDB API error: ${detailsResponse.status}`);
+    }
+    
+    const detailsData: TmdbMovieDetailsResponse = await detailsResponse.json();
+    
+    // Fetch credits (cast and crew)
+    const creditsResponse = await fetch(
+      `${BASE_URL}/movie/${movieId}/credits?api_key=${API_KEY}&language=en-US`
+    );
+    
+    if (!creditsResponse.ok) {
+      throw new Error(`TMDB API error: ${creditsResponse.status}`);
+    }
+    
+    const creditsData: TmdbCreditsResponse = await creditsResponse.json();
+    
+    // Fetch reviews
+    const reviewsResponse = await fetch(
+      `${BASE_URL}/movie/${movieId}/reviews?api_key=${API_KEY}&language=en-US&page=1`
+    );
+    
+    if (!reviewsResponse.ok) {
+      throw new Error(`TMDB API error: ${reviewsResponse.status}`);
+    }
+    
+    const reviewsData: TmdbReviewsResponse = await reviewsResponse.json();
+    
+    // Combine all data into a single MovieDetails object
+    return {
+      id: detailsData.id,
+      title: detailsData.title,
+      overview: detailsData.overview,
+      posterUrl: detailsData.poster_path ? `${IMAGE_BASE_URL}${detailsData.poster_path}` : undefined,
+      backdropUrl: detailsData.backdrop_path ? `${IMAGE_BASE_URL}${detailsData.backdrop_path}` : undefined,
+      releaseDate: detailsData.release_date,
+      runtime: detailsData.runtime || undefined,
+      voteAverage: detailsData.vote_average,
+      genres: detailsData.genres.map(genre => genre.name),
+      cast: creditsData.cast.slice(0, 10).map(castMember => ({
+        id: castMember.id,
+        name: castMember.name,
+        character: castMember.character,
+        profileUrl: castMember.profile_path ? `${IMAGE_BASE_URL}${castMember.profile_path}` : undefined
+      })),
+      crew: creditsData.crew
+        .filter(crewMember => ['Director', 'Producer', 'Screenplay', 'Writer'].includes(crewMember.job))
+        .map(crewMember => ({
+          id: crewMember.id,
+          name: crewMember.name,
+          job: crewMember.job,
+          department: crewMember.department
+        })),
+      reviews: reviewsData.results.map(review => ({
+        id: review.id,
+        author: review.author,
+        content: review.content,
+        rating: review.author_details.rating || undefined
+      }))
+    };
+  } catch (error) {
+    console.error('Error fetching movie details:', error);
+    return null;
   }
 };

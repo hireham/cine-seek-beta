@@ -35,20 +35,35 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
     setExplanation(null);
     
     try {
+      console.log('Getting recommendations for mood:', mood);
+      
       // Get movie recommendations based on mood from OpenAI
       const recommendations = await getMoodBasedRecommendations(mood);
+      console.log('Received recommendations:', recommendations);
+      
       setInterpretedMood(recommendations.mood);
       setExplanation(recommendations.explanation);
       
       // Use the movie titles to search for movie details using TMDB
+      console.log('Searching for movies with titles:', recommendations.titles);
+      
       const moviePromises = recommendations.titles.map(title => 
         searchMovies(title, 1)
-          .then(results => results.length > 0 ? results[0] : null)
-          .catch(() => null)
+          .then(results => {
+            console.log(`Search results for "${title}":`, results);
+            return results.length > 0 ? results[0] : null;
+          })
+          .catch(error => {
+            console.error(`Error searching for "${title}":`, error);
+            return null;
+          })
       );
       
       const movieResults = await Promise.all(moviePromises);
+      console.log('All movie results:', movieResults);
+      
       const validMovies = movieResults.filter(movie => movie !== null) as Movie[];
+      console.log('Valid movies:', validMovies);
       
       if (validMovies.length === 0) {
         setError('Could not find details for the recommended movies');
@@ -57,14 +72,14 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
       }
     } catch (err) {
       setError('An error occurred while processing your mood');
-      console.error(err);
+      console.error('Error in handleMoodSubmit:', err);
       setShowMoodInput(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       handleMoodSubmit();
     }
@@ -83,7 +98,7 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
   if (!showMoodInput) {
     return (
       <div className="mood-processing">
-        {explanation && interpretedMood && !setIsLoading && (
+        {explanation && interpretedMood && (
           <div className="recommendation-explanation">
             <h3>Based on your "{interpretedMood}" mood:</h3>
             <p>{explanation}</p>
@@ -101,36 +116,27 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
 
   return (
     <div className="mood-recommendation-container">
-      <div className="mood-input-section">
-        <h3>How are you feeling today?</h3>
-        <p>Tell us your mood, and we'll recommend the perfect movies for you!</p>
-        
-        <div className="mood-input">
-          <input
-            type="text"
-            placeholder="Describe your mood (e.g., 'feeling nostalgic')"
-            value={mood}
-            onChange={(e) => setMood(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <button onClick={handleMoodSubmit}>
+      <div className="mood-card">
+        <div className="mood-input-section">
+          <h3>How are you feeling today?</h3>
+          <p>Be detailed about your feelings for better recommendations</p>
+          
+          <div className="mood-input">
+            <textarea
+              placeholder="Describe your current mood or emotional state..."
+              value={mood}
+              onChange={(e) => setMood(e.target.value)}
+              onKeyPress={handleKeyPress}
+              rows={5}
+            />
+          </div>
+          
+          <button 
+            className="get-recommendations-button"
+            onClick={handleMoodSubmit}
+          >
             Get Recommendations
           </button>
-        </div>
-        
-        <div className="mood-suggestions">
-          <p>Or select a mood:</p>
-          <div className="mood-tags">
-            {moodSuggestions.map((suggestion) => (
-              <span 
-                key={suggestion} 
-                className="mood-tag"
-                onClick={() => selectMoodSuggestion(suggestion)}
-              >
-                {suggestion}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </div>
