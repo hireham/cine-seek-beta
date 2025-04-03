@@ -1,12 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import MoodBasedRecommendation from './components/MoodBasedRecommendation';
+import MovieDetails from './components/MovieDetails';
 import { Movie } from './data/sampleMovies';
+import { MovieDetails as MovieDetailsType, getMovieDetails } from './services/tmdbService';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<Movie[]>([]);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const [movieDetails, setMovieDetails] = useState<MovieDetailsType | null>(null);
+  const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMovieDetails = async () => {
+      if (selectedMovieId) {
+        setIsDetailsLoading(true);
+        try {
+          const details = await getMovieDetails(selectedMovieId);
+          setMovieDetails(details);
+        } catch (error) {
+          console.error('Error fetching movie details:', error);
+          setMovieDetails(null);
+        } finally {
+          setIsDetailsLoading(false);
+        }
+      }
+    };
+
+    fetchMovieDetails();
+  }, [selectedMovieId]);
+
+  const handleMovieClick = (movieId: number) => {
+    setSelectedMovieId(movieId);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedMovieId(null);
+    setMovieDetails(null);
+  };
 
   return (
     <div className="app-container">
@@ -40,7 +73,11 @@ function App() {
           <h2>Your Movie Recommendations</h2>
           <div className="movie-grid">
             {recommendations.map(movie => (
-              <div key={movie.id} className="movie-card">
+              <div 
+                key={movie.id} 
+                className="movie-card" 
+                onClick={() => handleMovieClick(movie.id)}
+              >
                 {movie.posterUrl ? (
                   <img src={movie.posterUrl} alt={movie.title} className="movie-poster" />
                 ) : (
@@ -59,6 +96,14 @@ function App() {
             ))}
           </div>
         </div>
+      )}
+
+      {selectedMovieId && (
+        <MovieDetails 
+          movieDetails={movieDetails}
+          onClose={handleCloseDetails}
+          isLoading={isDetailsLoading}
+        />
       )}
     </div>
   );
