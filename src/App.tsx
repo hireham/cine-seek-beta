@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import MoodBasedRecommendation from './components/MoodBasedRecommendation';
 import MovieDetails from './components/MovieDetails';
+import MovieCard from './components/MovieCard';
 import { Movie } from './data/sampleMovies';
 import { MovieDetails as MovieDetailsType, getMovieDetails } from './services/tmdbService';
 
@@ -73,26 +74,15 @@ function App() {
           <h2>Your Movie Recommendations</h2>
           <div className="movie-grid">
             {recommendations.map(movie => (
-              <div 
-                key={movie.id} 
-                className="movie-card" 
-                onClick={() => handleMovieClick(movie.id)}
-              >
-                {movie.posterUrl ? (
-                  <img src={movie.posterUrl} alt={movie.title} className="movie-poster" />
-                ) : (
-                  <div className="movie-poster-placeholder">{movie.title}</div>
-                )}
-                <div className="movie-info">
-                  <h3>{movie.title}</h3>
-                  <p>{movie.year}</p>
-                  <div className="movie-genres">
-                    {movie.genres.map((genre, index) => (
-                      <span key={index} className="genre-tag">{genre}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <MovieCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                year={movie.year}
+                genres={movie.genres}
+                posterUrl={movie.posterUrl}
+                onMovieClick={handleMovieClick}
+              />
             ))}
           </div>
         </div>

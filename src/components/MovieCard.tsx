@@ -4,22 +4,18 @@ import './MovieCard.css';
 interface MovieCardProps {
   id: number;
   title: string;
-  subtitle?: string;
   year: number;
   genres: string[];
   posterUrl?: string;
-  backgroundImage?: string;
   onMovieClick: (movieId: number) => void;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
   id,
   title,
-  subtitle,
   year,
   genres,
   posterUrl,
-  backgroundImage,
   onMovieClick,
 }) => {
   const handleClick = () => {
@@ -28,28 +24,22 @@ const MovieCard: React.FC<MovieCardProps> = ({
 
   return (
     <div 
-      className="movie-card" 
+      className="movie-card-item" 
       onClick={handleClick}
-      style={{ 
-      backgroundImage: backgroundImage 
-        ? `url(${backgroundImage})` 
-        : posterUrl 
-          ? `url(${posterUrl})` 
-          : undefined 
-    }}>
-      <div className="movie-card-content">
-        {title && <h2 className="movie-title">{title}</h2>}
-        {subtitle && <h3 className="movie-subtitle">{subtitle}</h3>}
-        {year && <p className="movie-year">{year}</p>}
-        {genres && genres.length > 0 && (
-          <div className="movie-genres">
-            {genres.map((genre, index) => (
-              <span key={index} className="genre-tag">
-                {genre}
-              </span>
-            ))}
-          </div>
-        )}
+    >
+      {posterUrl ? (
+        <img src={posterUrl} alt={title} className="movie-card-poster" />
+      ) : (
+        <div className="movie-card-placeholder">{title}</div>
+      )}
+      <div className="movie-card-info">
+        <h3>{title}</h3>
+        <p>{year}</p>
+        <div className="movie-card-genres">
+          {genres.map((genre, index) => (
+            <span key={index} className="movie-card-genre">{genre}</span>
+          ))}
+        </div>
       </div>
     </div>
   );
