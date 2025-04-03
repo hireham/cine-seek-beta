@@ -33,12 +33,15 @@
 }
 
 .mood-input {
+  display: flex;
   margin-bottom: 24px;
   width: 100%;
 }
 
 .mood-input textarea {
   width: 100%;
+  margin-right: auto;
+  margin-left: auto;
   padding: 15px;
   border: 1px solid #e1e4e8;
   border-radius: 8px;
