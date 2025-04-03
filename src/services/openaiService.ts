@@ -45,7 +45,7 @@ export const getMoodBasedRecommendations = async (mood: string, count: number = 
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'system',

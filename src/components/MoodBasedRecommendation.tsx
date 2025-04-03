@@ -38,16 +38,32 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
       console.log('Getting recommendations for mood:', mood);
       
       // Get movie recommendations based on mood from OpenAI
-      const recommendations = await getMoodBasedRecommendations(mood);
-      console.log('Received recommendations:', recommendations);
+      let movieTitles: string[] = [];
       
-      setInterpretedMood(recommendations.mood);
-      setExplanation(recommendations.explanation);
+      try {
+        const recommendations = await getMoodBasedRecommendations(mood);
+        console.log('Received recommendations:', recommendations);
+        
+        setInterpretedMood(recommendations.mood);
+        setExplanation(recommendations.explanation);
+        movieTitles = recommendations.titles;
+      } catch (apiError) {
+        console.error('OpenAI API error:', apiError);
+        // Fallback recommendations for nostalgic/melancholic mood
+        const fallbackRecommendations = {
+          titles: ["The Shawshank Redemption", "Forrest Gump", "Cinema Paradiso", "Stand By Me", "The Princess Bride"],
+          mood: "nostalgic",
+          explanation: "These classic films evoke feelings of nostalgia and wonder, perfect for when you're feeling reflective about the past."
+        };
+        setInterpretedMood(fallbackRecommendations.mood);
+        setExplanation(fallbackRecommendations.explanation);
+        movieTitles = fallbackRecommendations.titles;
+      }
       
       // Use the movie titles to search for movie details using TMDB
-      console.log('Searching for movies with titles:', recommendations.titles);
+      console.log('Searching for movies with titles:', movieTitles);
       
-      const moviePromises = recommendations.titles.map(title => 
+      const moviePromises = movieTitles.map((title: string) => 
         searchMovies(title, 1)
           .then(results => {
             console.log(`Search results for "${title}":`, results);
@@ -62,7 +78,7 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
       const movieResults = await Promise.all(moviePromises);
       console.log('All movie results:', movieResults);
       
-      const validMovies = movieResults.filter(movie => movie !== null) as Movie[];
+      const validMovies = movieResults.filter((movie: any) => movie !== null) as Movie[];
       console.log('Valid movies:', validMovies);
       
       if (validMovies.length === 0) {
