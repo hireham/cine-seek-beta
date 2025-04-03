@@ -19,12 +19,6 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
   const [showMoodInput, setShowMoodInput] = useState(true);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [interpretedMood, setInterpretedMood] = useState<string | null>(null);
-  
-  const moodSuggestions = [
-    'Happy', 'Sad', 'Excited', 'Relaxed', 'Thoughtful',
-    'Nostalgic', 'Adventurous', 'Romantic', 'Inspired',
-    'Curious', 'Melancholic', 'Energetic'
-  ];
 
   const handleMoodSubmit = async () => {
     if (!mood.trim()) return;
@@ -95,14 +89,10 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       handleMoodSubmit();
     }
-  };
-
-  const selectMoodSuggestion = (suggestion: string) => {
-    setMood(suggestion);
   };
 
   const handleReset = () => {
@@ -138,13 +128,13 @@ const MoodBasedRecommendation: React.FC<MoodBasedRecommendationProps> = ({
           <p>Be detailed about your feelings for better recommendations</p>
           
           <div className="mood-input">
-            <textarea
-              placeholder="Describe your current mood or emotional state..."
-              value={mood}
-              onChange={(e) => setMood(e.target.value)}
-              onKeyPress={handleKeyPress}
-              rows={5}
-            />
+          <textarea
+            placeholder="Describe your current mood or emotional state..."
+            value={mood}
+            onChange={(e) => setMood(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows={5}
+          />
           </div>
           
           <button 

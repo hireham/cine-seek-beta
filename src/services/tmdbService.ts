@@ -166,25 +166,6 @@ export const searchMovies = async (query: string, limit?: number): Promise<Movie
   }
 };
 
-// Get popular movies
-export const getPopularMovies = async (): Promise<Movie[]> => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`
-    );
-    
-    if (!response.ok) {
-      throw new Error(`TMDB API error: ${response.status}`);
-    }
-    
-    const data: TmdbMovieResponse = await response.json();
-    return data.results.map(convertTmdbMovie);
-  } catch (error) {
-    console.error('Error fetching popular movies:', error);
-    return [];
-  }
-};
-
 // Get detailed movie information by ID
 export const getMovieDetails = async (movieId: number): Promise<MovieDetails | null> => {
   try {
